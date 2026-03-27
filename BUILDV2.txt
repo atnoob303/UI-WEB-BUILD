@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox UI Builder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;user-select:none}
+
+:root{
+  --bg0:#0d0d14;
+  --bg1:#12121c;
+  --bg2:#1a1a28;
+  --bg3:#222236;
+  --bg4:#2c2c45;
+  --border:#2e2e4a;
+  --border2:#3d3d60;
+  --text:#e2e2f0;
+  --text2:#9090b0;
+  --text3:#5a5a80;
+  --accent:#7c6af7;
+  --accent2:#a78bfa;
+  --accent3:#c4b5fd;
+  --green:#4ade80;
+  --red:#f87171;
+  --yellow:#fbbf24;
+  --cyan:#22d3ee;
+  --pink:#f472b6;
+  --orange:#fb923c;
+}
+
+body{font-family:'Syne',sans-serif;background:var(--bg0);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:12px}
+
+/* ── TOPBAR ── */
+#topbar{
+  background:var(--bg1);
+  border-bottom:1px solid var(--border);
+  padding:0 12px;
+  display:flex;align-items:center;gap:6px;
+  height:44px;flex-shrink:0;
+  position:relative;
+}
+#topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+
+.logo{
+  font-weight:800;font-size:15px;letter-spacing:-0.5px;
+  background:linear-gradient(135deg,var(--accent2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-right:8px;display:flex;align-items:center;gap:6px;flex-shrink:0
+}
+.logo svg{width:20px;height:20px;flex-shrink:0}
+
+.tool-sep{width:1px;height:24px;background:var(--border2);margin:0 2px;flex-shrink:0}
+
+.tool-btn{
+  background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text2);padding:4px 10px;border-radius:6px;
+  cursor:pointer;font-size:11px;font-family:'Syne',sans-serif;font-weight:600;
+  transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;
+  letter-spacing:0.2px;
+}
+.tool-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--accent)}
+.tool-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 12px rgba(124,106,247,.4)}
+.tool-btn.danger{color:var(--red);border-color:var(--red)}
+.tool-btn.danger:hover{background:rgba(248,113,113,.1)}
+.tool-btn.success{color:var(--green);border-color:var(--green)}
+.tool-btn.success:hover{background:rgba(74,222,128,.1)}
+.tool-btn.warn{color:var(--yellow);border-color:var(--yellow)}
+.tool-btn.warn:hover{background:rgba(251,191,36,.1)}
+.tool-btn.info{color:var(--cyan);border-color:var(--cyan)}
+.tool-btn.info:hover{background:rgba(34,211,238,.1)}
+
+/* ── MAIN ── */
+#main{display:flex;flex:1;overflow:hidden}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:192px;background:var(--bg1);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+}
+.lp-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.lp-tab{flex:1;padding:7px 4px;text-align:center;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase}
+.lp-tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.lp-tab-content{display:none;flex:1;overflow-y:auto;overflow-x:hidden}
+.lp-tab-content.active{display:flex;flex-direction:column}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* Component palette */
+.comp-group{flex-shrink:0}
+.comp-group-header{padding:6px 10px 4px;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.comp-item{
+  padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:7px;
+  border-radius:5px;margin:1px 5px;transition:all .1s;color:var(--text2);font-size:11px;
+}
+.comp-item:hover{background:var(--bg3);color:var(--text)}
+.comp-item .ci-icon{
+  width:20px;height:20px;border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:11px;flex-shrink:0;font-style:normal;
+}
+.comp-item .ci-name{flex:1;font-weight:600}
+.comp-item .ci-badge{font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;text-transform:uppercase;flex-shrink:0}
+
+/* Element list */
+#elements-list{flex:1;overflow-y:auto;padding:4px}
+.el-item{
+  padding:5px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;
+  border-radius:5px;transition:all .1s;color:var(--text2);font-size:11px;
+}
+.el-item:hover{background:var(--bg3);color:var(--text)}
+.el-item.selected{background:var(--bg4);color:var(--accent2)}
+.el-item .ei-icon{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.el-item .ei-name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.el-item .ei-type{font-size:9px;color:var(--text3);flex-shrink:0}
+.el-empty{padding:20px 10px;text-align:center;color:var(--text3);font-size:11px;line-height:1.7}
+
+/* ── CANVAS ── */
+#canvas-area{flex:1;position:relative;overflow:hidden;background:var(--bg0);cursor:default}
+#canvas{width:100%;height:100%;position:relative}
+.grid-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(124,106,247,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,106,247,.05) 1px,transparent 1px),
+    linear-gradient(rgba(124,106,247,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,106,247,.03) 1px,transparent 1px);
+  background-size:100px 100px,100px 100px,20px 20px,20px 20px;
+  pointer-events:none;
+}
+#canvas-label{position:absolute;bottom:10px;right:14px;font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;pointer-events:none}
+
+#empty-hint{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;pointer-events:none;opacity:.35;
+}
+.hint-icon{font-size:40px}
+.hint-text{font-size:12px;color:var(--text2);text-align:center;line-height:1.8;font-weight:600}
+
+/* ── ELEMENTS ON CANVAS ── */
+.element{position:absolute;cursor:move;box-sizing:border-box}
+.element.selected-el{outline:2px solid var(--accent);outline-offset:1px}
+.element.selected-el::after{
+  content:attr(data-type);
+  position:absolute;top:-20px;left:0;
+  background:var(--accent);color:#fff;
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;
+  white-space:nowrap;pointer-events:none;font-family:'JetBrains Mono',monospace;
+}
+.resize-handle{
+  position:absolute;bottom:-5px;right:-5px;
+  width:10px;height:10px;background:var(--accent);
+  border:2px solid var(--bg0);border-radius:2px;cursor:se-resize;
+}
+
+/* modifier badge on canvas */
+.modifier-chip{
+  position:absolute;top:-18px;right:0;
+  display:flex;gap:2px;
+}
+.mod-badge{
+  font-size:8px;padding:1px 4px;border-radius:2px;font-weight:700;
+  background:rgba(124,106,247,.3);color:var(--accent3);border:1px solid var(--accent);
+  pointer-events:none;
+}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:240px;background:var(--bg1);
+  border-left:1px solid var(--border);
+  overflow-y:auto;flex-shrink:0;
+}
+.panel-section{border-bottom:1px solid var(--border)}
+.section-header{
+  padding:8px 10px;font-size:9px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1px;background:var(--bg2);
+  display:flex;align-items:center;gap:5px;cursor:pointer;
+}
+.section-header:hover{color:var(--text2)}
+.section-body{padding:2px 0}
+
+.prop-row{padding:4px 10px;display:flex;align-items:center;gap:6px;min-height:26px}
+.prop-label{color:var(--text3);font-size:10px;min-width:62px;flex-shrink:0;font-weight:600;letter-spacing:.2px}
+.prop-input{
+  background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text);padding:3px 6px;border-radius:4px;font-size:11px;
+  width:100%;outline:none;font-family:'JetBrains Mono',monospace;
+  transition:border .15s;
+}
+.prop-input:focus{border-color:var(--accent)}
+.prop-input[type=color]{padding:1px;height:22px;cursor:pointer;width:100%}
+.prop-input[type=range]{padding:0;accent-color:var(--accent);cursor:pointer}
+.prop-input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--accent)}
+select.prop-input{cursor:pointer}
+.prop-val{min-width:30px;font-size:10px;color:var(--accent2);font-family:'JetBrains Mono',monospace;text-align:right}
+
+.toggle-row{display:flex;gap:3px;padding:3px 10px}
+.tog-opt{
+  flex:1;text-align:center;padding:3px 2px;border-radius:4px;cursor:pointer;
+  font-size:10px;font-weight:700;background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text3);transition:all .1s;
+}
+.tog-opt.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.del-btn{
+  margin:8px 10px;padding:6px;background:rgba(248,113,113,.1);
+  border:1px solid var(--red);color:var(--red);
+  border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;
+  width:calc(100% - 20px);transition:all .15s;font-family:'Syne',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.del-btn:hover{background:rgba(248,113,113,.2)}
+
+.no-select{color:var(--text3);font-size:11px;padding:20px 12px;text-align:center;line-height:1.8}
+
+.modifier-section{padding:6px 10px}
+.modifier-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.modifier-tags{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+.mod-tag{
+  font-size:9px;padding:2px 6px;border-radius:3px;cursor:pointer;font-weight:700;
+  border:1px solid var(--border2);color:var(--text3);background:var(--bg3);transition:all .1s;
+}
+.mod-tag:hover{border-color:var(--accent);color:var(--accent2)}
+.mod-tag.active-mod{background:rgba(124,106,247,.2);border-color:var(--accent);color:var(--accent2)}
+
+/* ── EXPORT MODAL ── */
+#export-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;align-items:center;justify-content:center}
+#export-modal.show{display:flex}
+#export-box{
+  background:var(--bg1);border:1px solid var(--border2);
+  border-radius:12px;width:720px;max-height:82vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(124,106,247,.1);
+}
+.modal-header{
+  padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.modal-title{color:var(--accent2);font-weight:700;font-size:13px}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;transition:color .1s}
+.modal-close:hover{color:var(--text)}
+.export-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border)}
+.export-tab{padding:8px 16px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s}
+.export-tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+#export-code{
+  flex:1;overflow-y:auto;margin:0;padding:16px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;
+  color:#a6e3a1;white-space:pre-wrap;word-break:break-all;background:var(--bg0);
+}
+.modal-footer{
+  padding:10px 16px;background:var(--bg2);border-top:1px solid var(--border);
+  display:flex;gap:8px;justify-content:flex-end;align-items:center;
+}
+.footer-info{flex:1;font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+
+/* type colors */
+.type-frame{--tc:#7c6af7}
+.type-scrollingframe{--tc:#a78bfa}
+.type-canvasgroup{--tc:#c4b5fd}
+.type-viewportframe{--tc:#60a5fa}
+.type-textlabel{--tc:#4ade80}
+.type-imagelabel{--tc:#34d399}
+.type-textbutton{--tc:#f472b6}
+.type-imagebutton{--tc:#fb7185}
+.type-videoframe{--tc:#f59e0b}
+.type-screengui{--tc:#22d3ee}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="2" width="7" height="7" rx="2" fill="#7c6af7"/>
+      <rect x="11" y="2" width="7" height="7" rx="2" fill="#a78bfa"/>
+      <rect x="2" y="11" width="7" height="7" rx="2" fill="#22d3ee"/>
+      <rect x="11" y="11" width="7" height="7" rx="2" fill="#f472b6"/>
+    </svg>
+    Roblox UI Builder
+  </div>
+  <div class="tool-sep"></div>
+  <button class="tool-btn active" id="btn-select" onclick="setTool('select')">✦ Select</button>
+  <button class="tool-btn" id="btn-draw" onclick="setTool('draw')">✎ Draw</button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn info" onclick="undoAction()" title="Ctrl+Z">↩ Undo</button>
+  <button class="tool-btn success" onclick="duplicateSelected()" title="Ctrl+D">⧉ Dup</button>
+  <button class="tool-btn" onclick="bringForward()" title="Layer up">↑ Fwd</button>
+  <button class="tool-btn" onclick="sendBackward()" title="Layer down">↓ Bck</button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn danger" onclick="clearAll()">✕ Clear</button>
+  <button class="tool-btn warn" onclick="showExport()">⬇ Export Lua</button>
+  <div id="canvas-info" style="margin-left:auto;font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace"></div>
+</div>
+
+<div id="main">
+  <!-- LEFT -->
+  <div id="left-panel">
+    <div class="lp-tabs">
+      <div class="lp-tab active" onclick="switchLTab(0)" id="ltab0">Components</div>
+      <div class="lp-tab" onclick="switchLTab(1)" id="ltab1">Hierarchy</div>
+    </div>
+
+    <!-- Components palette -->
+    <div class="lp-tab-content active" id="ltabc0">
+      <div class="comp-group">
+        <div class="comp-group-header">📦 Containers</div>
+        <div class="comp-item" onclick="addPreset('Frame')" title="Khung cơ bản">
+          <div class="ci-icon" style="background:rgba(124,106,247,.2);color:#7c6af7">▭</div>
+          <span class="ci-name">Frame</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('ScrollingFrame')" title="Khung cuộn">
+          <div class="ci-icon" style="background:rgba(167,139,250,.2);color:#a78bfa">⊟</div>
+          <span class="ci-name">ScrollingFrame</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('CanvasGroup')" title="Nhóm UI có transparency chung">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⊞</div>
+          <span class="ci-name">CanvasGroup</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('ViewportFrame')" title="Hiển thị 3D object">
+          <div class="ci-icon" style="background:rgba(96,165,250,.2);color:#60a5fa">⊟</div>
+          <span class="ci-name">ViewportFrame</span>
+          <span class="ci-badge" style="background:rgba(96,165,250,.2);color:#60a5fa">3D</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('VideoFrame')" title="Phát video">
+          <div class="ci-icon" style="background:rgba(245,158,11,.2);color:#f59e0b">▶</div>
+          <span class="ci-name">VideoFrame</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('ScreenGui')" title="UI root trên màn hình">
+          <div class="ci-icon" style="background:rgba(34,211,238,.2);color:#22d3ee">⊡</div>
+          <span class="ci-name">ScreenGui</span>
+          <span class="ci-badge" style="background:rgba(34,211,238,.2);color:#22d3ee">Root</span>
+        </div>
+      </div>
+
+      <div class="comp-group">
+        <div class="comp-group-header">🔤 Display</div>
+        <div class="comp-item" onclick="addPreset('TextLabel')" title="Hiển thị chữ">
+          <div class="ci-icon" style="background:rgba(74,222,128,.2);color:#4ade80">T</div>
+          <span class="ci-name">TextLabel</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('ImageLabel')" title="Hiển thị ảnh">
+          <div class="ci-icon" style="background:rgba(52,211,153,.2);color:#34d399">🖼</div>
+          <span class="ci-name">ImageLabel</span>
+        </div>
+      </div>
+
+      <div class="comp-group">
+        <div class="comp-group-header">🖱 Interactive</div>
+        <div class="comp-item" onclick="addPreset('TextButton')" title="Nút có chữ">
+          <div class="ci-icon" style="background:rgba(244,114,182,.2);color:#f472b6">⊡</div>
+          <span class="ci-name">TextButton</span>
+        </div>
+        <div class="comp-item" onclick="addPreset('ImageButton')" title="Nút hình ảnh">
+          <div class="ci-icon" style="background:rgba(251,113,133,.2);color:#fb7185">⊟</div>
+          <span class="ci-name">ImageButton</span>
+        </div>
+      </div>
+
+      <div class="comp-group">
+        <div class="comp-group-header">📐 Layout</div>
+        <div class="comp-item" onclick="addModifierToSelected('UIListLayout')" title="Xếp theo hàng/cột">
+          <div class="ci-icon" style="background:rgba(251,191,36,.2);color:#fbbf24">≡</div>
+          <span class="ci-name">UIListLayout</span>
+          <span class="ci-badge" style="background:rgba(251,191,36,.2);color:#fbbf24">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIGridLayout')" title="Layout dạng lưới">
+          <div class="ci-icon" style="background:rgba(251,191,36,.2);color:#fbbf24">⊞</div>
+          <span class="ci-name">UIGridLayout</span>
+          <span class="ci-badge" style="background:rgba(251,191,36,.2);color:#fbbf24">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UITableLayout')" title="Layout dạng bảng">
+          <div class="ci-icon" style="background:rgba(251,191,36,.2);color:#fbbf24">⊟</div>
+          <span class="ci-name">UITableLayout</span>
+          <span class="ci-badge" style="background:rgba(251,191,36,.2);color:#fbbf24">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIPageLayout')" title="Chuyển trang swipe">
+          <div class="ci-icon" style="background:rgba(251,191,36,.2);color:#fbbf24">⇌</div>
+          <span class="ci-name">UIPageLayout</span>
+          <span class="ci-badge" style="background:rgba(251,191,36,.2);color:#fbbf24">Mod</span>
+        </div>
+      </div>
+
+      <div class="comp-group">
+        <div class="comp-group-header">✨ Modifier</div>
+        <div class="comp-item" onclick="addModifierToSelected('UICorner')" title="Bo góc UI">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">◜</div>
+          <span class="ci-name">UICorner</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIGradient')" title="Màu chuyển gradient">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">▦</div>
+          <span class="ci-name">UIGradient</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIStroke')" title="Viền UI">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">▭</div>
+          <span class="ci-name">UIStroke</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIPadding')" title="Padding bên trong">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⊡</div>
+          <span class="ci-name">UIPadding</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIScale')" title="Scale UI">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⤢</div>
+          <span class="ci-name">UIScale</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIAspectRatioConstraint')" title="Giữ tỉ lệ">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⊠</div>
+          <span class="ci-name">UIAspectRatio</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UISizeConstraint')" title="Giới hạn size">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⊞</div>
+          <span class="ci-name">UISizeConstraint</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UITextSizeConstraint')" title="Giới hạn size chữ">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">T↕</div>
+          <span class="ci-name">UITextSize</span>
+          <span class="ci-badge" style="background:rgba(196,181,253,.2);color:#c4b5fd">Mod</span>
+        </div>
+        <div class="comp-item" onclick="addModifierToSelected('UIFlexItem')" title="Flex item (mới)">
+          <div class="ci-icon" style="background:rgba(196,181,253,.2);color:#c4b5fd">⇔</div>
+          <span class="ci-name">UIFlexItem</span>
+          <span class="ci-badge" style="background:rgba(34,211,238,.2);color:#22d3ee">New</span>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+    </div>
+
+    <!-- Hierarchy -->
+    <div class="lp-tab-content" id="ltabc1">
+      <div id="elements-list"></div>
+      <div id="el-empty" class="el-empty">Chưa có element nào.<br>Chọn component rồi kéo vẽ!</div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-area">
+    <div class="grid-bg"></div>
+    <div id="canvas">
+      <div id="empty-hint">
+        <div class="hint-icon">🎮</div>
+        <div class="hint-text">Chọn component bên trái<br>rồi kéo vẽ lên canvas<br><span style="font-size:10px;color:var(--text3)">hoặc dùng nút Draw mode</span></div>
+      </div>
+    </div>
+    <div id="canvas-label">Roblox UI Builder v2 • Kéo để vẽ</div>
+  </div>
+
+  <!-- RIGHT: PROPERTIES -->
+  <div id="right-panel">
+    <div id="props-panel">
+      <div class="no-select">Chọn một element<br>để xem Properties</div>
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div id="export-modal">
+  <div id="export-box">
+    <div class="modal-header">
+      <span class="modal-title">📄 Export Code</span>
+      <button class="modal-close" onclick="hideExport()">✕</button>
+    </div>
+    <div class="export-tabs">
+      <div class="export-tab active" onclick="switchExportTab('lua')" id="etab-lua">Lua (Roblox)</div>
+      <div class="export-tab" onclick="switchExportTab('html')" id="etab-html">HTML Preview</div>
+    </div>
+    <pre id="export-code"></pre>
+    <div class="modal-footer">
+      <span class="footer-info" id="export-stats"></span>
+      <button class="tool-btn" onclick="copyCode()">📋 Copy</button>
+      <button class="tool-btn success" onclick="downloadCode()">⬇ Download</button>
+      <button class="tool-btn" onclick="hideExport()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+let elements = [], selected = null, tool = 'select', idCounter = 0;
+let history = [], drawTool = null, exportTab = 'lua';
+let drawStart = null;
+
+const TYPE_DEFAULTS = {
+  Frame:         { bg:'#222236', bgColor:{r:34,g:34,b:54}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, clipChildren:false },
+  ScrollingFrame:{ bg:'#1a1a28', bgColor:{r:26,g:26,b:40}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, scrollBarThickness:6, scrollBarColor:{r:124,g:106,b:247}, canvasScaleX:0, canvasSizeY:200, scrollEnabled:true },
+  CanvasGroup:   { bg:'#2c2c45', bgColor:{r:44,g:44,b:69}, borderColor:{r:62,g:62,b,96}, borderWidth:0, cornerRadius:0, opacity:0.9, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, groupTransparency:0.1 },
+  ViewportFrame: { bg:'#111120', bgColor:{r:17,g:17,b:32}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, lightColor:{r:255,g:255,b:255}, lightDirection:{x:0,y:1,z:0}, ambient:{r:100,g:100,b:100} },
+  VideoFrame:    { bg:'#111120', bgColor:{r:17,g:17,b:32}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, videoId:'rbxassetid://0', volume:0.5, playing:false, looped:false, timePosition:0 },
+  ScreenGui:     { bg:'transparent', bgColor:{r:0,g:0,b:0}, opacity:1, zIndex:0, visible:true, enabled:true, displayOrder:0, resetOnSpawn:true, ignoreGuiInset:false, clipToDeviceSafeArea:true },
+  TextLabel:     { bg:'transparent', bgColor:{r:0,g:0,b:0}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, text:'Label', textColor:{r:226,g:226,b:240}, textSize:14, font:'GothamMedium', textXAlignment:'Left', textYAlignment:'Center', textWrapped:false, textScaled:false, textTransparency:0, richText:false },
+  ImageLabel:    { bg:'#313244', bgColor:{r:49,g:50,b:68}, borderColor:{r:62,g:62,b:96}, borderWidth:0, cornerRadius:0, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, image:'rbxassetid://0', imageColor:{r:255,g:255,b:255}, scaleType:'Stretch', sliceCenter:{x0:0,y0:0,x1:100,y1:100}, tileSize:{x:16,y:16}, imageTransparency:0 },
+  TextButton:    { bg:'#7c6af7', bgColor:{r:124,g:106,b:247}, borderColor:{r:167,g:139,b:250}, borderWidth:0, cornerRadius:8, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, text:'Button', textColor:{r:255,g:255,b:255}, textSize:14, font:'GothamBold', textXAlignment:'Center', textYAlignment:'Center', textWrapped:false, autoButtonColor:true, modal:false, selectionImageObject:'' },
+  ImageButton:   { bg:'#f472b6', bgColor:{r:244,g:114,b:182}, borderColor:{r:251,g,113,b:133}, borderWidth:0, cornerRadius:8, opacity:1, zIndex:0, visible:true, anchorX:0,anchorY:0, posScaleX:0,posScaleY:0, sizeScaleX:0,sizeScaleY:0, image:'rbxassetid://0', imageColor:{r:255,g:255,b:255}, scaleType:'Stretch', imageTransparency:0, autoButtonColor:true, modal:false },
+};
+
+function fixDefaults(d) {
+  // Fix broken object literals
+  if (!d) return {};
+  for (const k in d) if (typeof d[k] === 'object' && d[k] !== null && 'b' in d[k] && d[k].b === undefined) d[k].b = 0;
+  return d;
+}
+
+const ROBLOX_FONTS = ['GothamMedium','GothamBold','Gotham','Arial','ArialBold','Legacy','Highway','SciFi','Antique','Cartoon','Code','Fantasy','Garamond','Arcade','Code','Bodoni','Ubuntu','Merriweather','Oswald','Nunito','Jura','Permanent Marker','Titillium Web','Zekton','Fredoka One','Creepster','IndieFlower','Bangers'];
+
+const MODIFIER_DEFAULTS = {
+  UICorner:                { cornerRadius:8 },
+  UIGradient:              { color0:'#7c6af7', color1:'#22d3ee', rotation:0, enabled:true },
+  UIStroke:                { color:'#7c6af7', thickness:2, transparency:0, lineJoinMode:'Round', applyStrokeMode:'Border', enabled:true },
+  UIPadding:               { left:8, right:8, top:8, bottom:8 },
+  UIScale:                 { scale:1 },
+  UIAspectRatioConstraint: { aspectRatio:1, aspectType:'FitWithinMaxSize', dominantAxis:'Width' },
+  UISizeConstraint:        { minSizeX:0, minSizeY:0, maxSizeX:999, maxSizeY:999 },
+  UITextSizeConstraint:    { minTextSize:6, maxTextSize:100 },
+  UIListLayout:            { fillDirection:'Vertical', horizontalAlignment:'Left', verticalAlignment:'Top', sortOrder:'LayoutOrder', padding:4, wraps:false },
+  UIGridLayout:            { cellSize:100, cellPaddingX:4, cellPaddingY:4, fillDirection:'Horizontal', horizontalAlignment:'Left', verticalAlignment:'Top', sortOrder:'LayoutOrder', fillDirectionMaxCells:0, startCorner:'TopLeft' },
+  UITableLayout:           { fillEmptySpaceColumns:false, fillEmptySpaceRows:false, horizontalAlignment:'Left', verticalAlignment:'Top', sortOrder:'LayoutOrder', padding:0 },
+  UIPageLayout:            { animated:true, animationDirection:'Horizontal', circular:false, dragFreeLength:25, dragThreshold:10, easingDirection:'Out', easingStyle:'Quad', gampadInputEnabled:true, padding:0, scrollWheelInputEnabled:true, touchInputEnabled:true },
+  UIFlexItem:              { flexMode:'Fill', growRatio:1, shrinkRatio:1, itemLineAlignment:'Automatic' },
+};
+
+// ─────────────────────────────────────────────
+// ELEMENT CREATE
+// ─────────────────────────────────────────────
+function makeEl(type, x, y, w, h) {
+  const id = 'el_' + (++idCounter);
+  const d = JSON.parse(JSON.stringify(TYPE_DEFAULTS[type] || TYPE_DEFAULTS.Frame));
+  fixDefaults(d);
+  return { id, type, x, y, w, h, name: type + idCounter, modifiers: {}, ...d };
+}
+
+// ─────────────────────────────────────────────
+// HISTORY
+// ─────────────────────────────────────────────
+function saveHistory() {
+  history.push(JSON.parse(JSON.stringify(elements)));
+  if (history.length > 60) history.shift();
+}
+function undoAction() {
+  if (!history.length) return;
+  elements.forEach(el => { const d = document.getElementById(el.id); if (d) d.remove(); });
+  elements = history.pop();
+  selected = null;
+  elements.forEach(renderEl);
+  renderElementsList();
+  renderProps();
+  syncHint();
+}
+
+// ─────────────────────────────────────────────
+// TOOLS
+// ─────────────────────────────────────────────
+function setTool(t) {
+  tool = t;
+  document.getElementById('btn-select').classList.toggle('active', t === 'select');
+  document.getElementById('btn-draw').classList.toggle('active', t === 'draw');
+  document.getElementById('canvas-area').style.cursor = t === 'draw' ? 'crosshair' : 'default';
+}
+
+// ─────────────────────────────────────────────
+// RENDER ELEMENT
+// ─────────────────────────────────────────────
+function rgbStr(c) {
+  if (!c) return '#888';
+  return `rgb(${Math.round(c.r||0)},${Math.round(c.g||0)},${Math.round(c.b||0)})`;
+}
+
+function renderEl(el) {
+  let dom = document.getElementById(el.id);
+  const isNew = !dom;
+  if (isNew) {
+    dom = document.createElement('div');
+    dom.id = el.id;
+    dom.className = 'element';
+    document.getElementById('canvas').appendChild(dom);
+  }
+
+  dom.dataset.type = el.type;
+  dom.style.left   = el.x + 'px';
+  dom.style.top    = el.y + 'px';
+  dom.style.width  = el.w + 'px';
+  dom.style.height = el.h + 'px';
+  dom.style.zIndex = (el.zIndex || 0) + 1;
+  dom.style.opacity = typeof el.opacity === 'number' ? el.opacity : 1;
+  dom.style.display = el.visible === false ? 'none' : '';
+
+  // Background
+  const mods = el.modifiers || {};
+  if (mods.UIGradient && mods.UIGradient.enabled !== false) {
+    const g = mods.UIGradient;
+    dom.style.background = `linear-gradient(${g.rotation||0}deg,${g.color0||'#7c6af7'},${g.color1||'#22d3ee'})`;
+  } else {
+    dom.style.background = el.bgColor ? rgbStr(el.bgColor) : (el.bg || '#222236');
+  }
+
+  // UICorner
+  if (mods.UICorner) {
+    dom.style.borderRadius = (mods.UICorner.cornerRadius || 0) + 'px';
+  } else if (el.cornerRadius !== undefined) {
+    dom.style.borderRadius = el.cornerRadius + 'px';
+  } else {
+    dom.style.borderRadius = '0px';
+  }
+
+  // UIStroke
+  if (mods.UIStroke && mods.UIStroke.enabled !== false) {
+    const s = mods.UIStroke;
+    dom.style.outline = `${s.thickness||2}px solid ${s.color||'#7c6af7'}`;
+    dom.style.outlineOffset = '0px';
+    dom.style.border = 'none';
+  } else if (el.borderWidth > 0) {
+    dom.style.border = `${el.borderWidth}px solid ${rgbStr(el.borderColor)}`;
+    dom.style.outline = 'none';
+  } else {
+    dom.style.border = 'none';
+    dom.style.outline = 'none';
+  }
+
+  // UIPadding
+  if (mods.UIPadding) {
+    const p = mods.UIPadding;
+    dom.style.padding = `${p.top||0}px ${p.right||0}px ${p.bottom||0}px ${p.left||0}px`;
+  } else {
+    dom.style.padding = '';
+  }
+
+  // Selected outline
+  if (selected === el.id) {
+    dom.style.outline = `2px solid var(--accent)`;
+    dom.style.outlineOffset = '2px';
+    dom.classList.add('selected-el');
+  } else {
+    dom.classList.remove('selected-el');
+    if (!mods.UIStroke || mods.UIStroke.enabled === false) dom.style.outline = 'none';
+  }
+
+  // Inner content
+  dom.innerHTML = '';
+
+  // Modifier badges
+  const modKeys = Object.keys(mods);
+  if (modKeys.length) {
+    const chip = document.createElement('div');
+    chip.className = 'modifier-chip';
+    modKeys.slice(0,4).forEach(mk => {
+      const b = document.createElement('span');
+      b.className = 'mod-badge';
+      b.textContent = mk.replace('UI','');
+      chip.appendChild(b);
+    });
+    dom.appendChild(chip);
+  }
+
+  // Text
+  if (el.type === 'TextLabel' || el.type === 'TextButton') {
+    const sp = document.createElement('div');
+    sp.style.cssText = `
+      width:100%;height:100%;display:flex;align-items:center;pointer-events:none;
+      color:${rgbStr(el.textColor)};
+      font-size:${el.textSize||14}px;
+      font-weight:${el.type==='TextButton'?700:400};
+      justify-content:${el.textXAlignment==='Center'?'center':el.textXAlignment==='Right'?'flex-end':'flex-start'};
+      padding:0 8px;
+      font-family:${el.font||'GothamMedium'},sans-serif;
+    `;
+    sp.textContent = el.text || el.type;
+    dom.appendChild(sp);
+  }
+
+  if (el.type === 'ImageLabel' || el.type === 'ImageButton') {
+    const ph = document.createElement('div');
+    ph.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.4;pointer-events:none';
+    ph.textContent = el.type === 'ImageButton' ? '🔘' : '🖼';
+    dom.appendChild(ph);
+  }
+
+  if (el.type === 'VideoFrame') {
+    const ph = document.createElement('div');
+    ph.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.5;pointer-events:none;flex-direction:column;gap:4px';
+    ph.innerHTML = '▶<div style="font-size:10px;color:#f59e0b;font-family:JetBrains Mono,monospace">VIDEO</div>';
+    dom.appendChild(ph);
+  }
+
+  if (el.type === 'ViewportFrame') {
+    const ph = document.createElement('div');
+    ph.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.4;pointer-events:none;flex-direction:column;gap:4px';
+    ph.innerHTML = '📦<div style="font-size:10px;color:#60a5fa;font-family:JetBrains Mono,monospace">3D VIEW</div>';
+    dom.appendChild(ph);
+  }
+
+  if (el.type === 'ScrollingFrame') {
+    const sb = document.createElement('div');
+    sb.style.cssText = `position:absolute;right:0;top:0;bottom:0;width:${el.scrollBarThickness||6}px;background:${rgbStr(el.scrollBarColor)};opacity:.4;border-radius:3px;`;
+    dom.appendChild(sb);
+  }
+
+  if (el.type === 'ScreenGui') {
+    const label = document.createElement('div');
+    label.style.cssText = 'position:absolute;top:4px;left:4px;font-size:9px;color:#22d3ee;font-family:JetBrains Mono,monospace;opacity:.6;font-weight:700;pointer-events:none';
+    label.textContent = '⊡ ScreenGui';
+    dom.appendChild(label);
+    dom.style.border = '1px dashed rgba(34,211,238,.3)';
+  }
+
+  // Resize handle
+  const rh = document.createElement('div');
+  rh.className = 'resize-handle';
+  rh.onmousedown = e => { e.stopPropagation(); startResize(el, e); };
+  dom.appendChild(rh);
+
+  dom.onmousedown = e => {
+    if (e.target.classList.contains('resize-handle')) return;
+    e.stopPropagation();
+    selectEl(el.id);
+    startDrag(el, e);
+  };
+  dom.onclick = e => { e.stopPropagation(); selectEl(el.id); };
+
+  return dom;
+}
+
+// ─────────────────────────────────────────────
+// SELECT / DRAG / RESIZE
+// ─────────────────────────────────────────────
+function selectEl(id) {
+  selected = id;
+  elements.forEach(el => {
+    const d = document.getElementById(el.id);
+    if (d) {
+      d.classList.toggle('selected-el', el.id === id);
+      if (el.id !== id && !(el.modifiers||{}).UIStroke) d.style.outline = 'none';
+    }
+  });
+  renderProps();
+  renderElementsList();
+}
+
+function startDrag(el, e) {
+  saveHistory();
+  const offX = e.clientX - el.x, offY = e.clientY - el.y;
+  const mm = ev => { el.x = Math.max(0, ev.clientX - offX); el.y = Math.max(0, ev.clientY - offY); renderEl(el); updateCanvasInfo(el); };
+  const mu = () => { document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); };
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+
+function startResize(el, e) {
+  saveHistory();
+  const sx = e.clientX, sy = e.clientY, sw = el.w, sh = el.h;
+  const mm = ev => {
+    el.w = Math.max(20, sw + (ev.clientX - sx));
+    el.h = Math.max(20, sh + (ev.clientY - sy));
+    renderEl(el); renderProps(); updateCanvasInfo(el);
+  };
+  const mu = () => { document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); };
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+
+function updateCanvasInfo(el) {
+  document.getElementById('canvas-info').textContent = `${el.type} • ${Math.round(el.x)},${Math.round(el.y)} • ${Math.round(el.w)}×${Math.round(el.h)}`;
+}
+
+// ─────────────────────────────────────────────
+// CANVAS DRAW
+// ─────────────────────────────────────────────
+const canvasArea = document.getElementById('canvas-area');
+
+canvasArea.onmousedown = e => {
+  if (e.target !== canvasArea && e.target !== document.getElementById('canvas') && !e.target.classList.contains('grid-bg')) {
+    if (tool === 'select') { selectEl(null); renderProps(); }
+    return;
+  }
+  if (tool === 'select') { selectEl(null); renderProps(); return; }
+
+  const r = canvasArea.getBoundingClientRect();
+  drawStart = { x: e.clientX - r.left, y: e.clientY - r.top };
+
+  // Use drawTool (set when clicking component) or default Frame
+  const type = drawTool || 'Frame';
+  const el = makeEl(type, drawStart.x, drawStart.y, 10, 10);
+  saveHistory();
+  elements.push(el);
+  renderEl(el);
+  selectEl(el.id);
+  syncHint();
+
+  const mm = ev => {
+    const nx = ev.clientX - r.left, ny = ev.clientY - r.top;
+    el.x = Math.min(drawStart.x, nx); el.y = Math.min(drawStart.y, ny);
+    el.w = Math.abs(nx - drawStart.x) || 10; el.h = Math.abs(ny - drawStart.y) || 10;
+    renderEl(el); updateCanvasInfo(el);
+  };
+  const mu = () => {
+    if (el.w < 20) el.w = defaultWidth(type);
+    if (el.h < 20) el.h = defaultHeight(type);
+    renderEl(el); renderProps(); setTool('select'); drawTool = null;
+    document.removeEventListener('mousemove', mm);
+    document.removeEventListener('mouseup', mu);
+  };
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+};
+
+function defaultWidth(t) { const m={TextLabel:160,TextButton:120,ImageLabel:100,ImageButton:100,VideoFrame:200,ViewportFrame:160,ScreenGui:400,ScrollingFrame:200,CanvasGroup:180}; return m[t]||160; }
+function defaultHeight(t) { const m={TextLabel:32,TextButton:36,ImageLabel:100,ImageButton:100,VideoFrame:120,ViewportFrame:120,ScreenGui:300,ScrollingFrame:200,CanvasGroup:180}; return m[t]||80; }
+
+// ─────────────────────────────────────────────
+// PRESETS (click to draw)
+// ─────────────────────────────────────────────
+function addPreset(type) {
+  drawTool = type;
+  setTool('draw');
+  showToast(`🖊 Draw mode: ${type}`);
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--accent);color:var(--accent2);padding:6px 14px;border-radius:6px;font-size:11px;font-weight:700;z-index:9999;pointer-events:none;transition:opacity .3s'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, 1800);
+}
+
+// ─────────────────────────────────────────────
+// MODIFIERS
+// ─────────────────────────────────────────────
+function addModifierToSelected(modType) {
+  const el = elements.find(e => e.id === selected);
+  if (!el) { showToast('⚠ Chọn element trước!'); return; }
+  if (!el.modifiers) el.modifiers = {};
+  if (el.modifiers[modType]) { showToast(`${modType} already added!`); return; }
+  saveHistory();
+  el.modifiers[modType] = JSON.parse(JSON.stringify(MODIFIER_DEFAULTS[modType] || {}));
+  renderEl(el);
+  renderProps();
+  showToast(`✓ Added ${modType}`);
+}
+
+function removeModifier(modType) {
+  const el = elements.find(e => e.id === selected);
+  if (!el || !el.modifiers) return;
+  saveHistory();
+  delete el.modifiers[modType];
+  renderEl(el);
+  renderProps();
+}
+
+// ─────────────────────────────────────────────
+// LAYERS
+// ─────────────────────────────────────────────
+function bringForward() {
+  const el = elements.find(e => e.id === selected);
+  if (!el) return;
+  saveHistory();
+  el.zIndex = (el.zIndex || 0) + 1;
+  renderEl(el);
+}
+function sendBackward() {
+  const el = elements.find(e => e.id === selected);
+  if (!el) return;
+  saveHistory();
+  el.zIndex = Math.max(0, (el.zIndex || 0) - 1);
+  renderEl(el);
+}
+
+// ─────────────────────────────────────────────
+// DUPLICATE / DELETE / CLEAR
+// ─────────────────────────────────────────────
+function duplicateSelected() {
+  if (!selected) return;
+  const orig = elements.find(e => e.id === selected);
+  if (!orig) return;
+  saveHistory();
+  const copy = JSON.parse(JSON.stringify(orig));
+  copy.id = 'el_' + (++idCounter);
+  copy.name = orig.type + idCounter;
+  copy.x += 20; copy.y += 20;
+  elements.push(copy);
+  renderEl(copy);
+  selectEl(copy.id);
+  renderElementsList();
+}
+
+function deleteSelected() {
+  if (!selected) return;
+  saveHistory();
+  const d = document.getElementById(selected);
+  if (d) d.remove();
+  elements = elements.filter(e => e.id !== selected);
+  selected = null;
+  renderProps(); renderElementsList(); syncHint();
+}
+
+function clearAll() {
+  if (elements.length && !confirm('Xóa tất cả elements?')) return;
+  saveHistory();
+  elements.forEach(el => { const d = document.getElementById(el.id); if (d) d.remove(); });
+  elements = []; selected = null;
+  renderProps(); renderElementsList(); syncHint();
+}
+
+function syncHint() {
+  document.getElementById('empty-hint').style.display = elements.length ? 'none' : 'flex';
+  document.getElementById('el-empty').style.display = elements.length ? 'none' : 'block';
+}
+
+// ─────────────────────────────────────────────
+// HIERARCHY LIST
+// ─────────────────────────────────────────────
+function renderElementsList() {
+  const list = document.getElementById('elements-list');
+  list.innerHTML = '';
+  const icons = {Frame:'▭',ScrollingFrame:'⊟',CanvasGroup:'⊞',ViewportFrame:'📦',VideoFrame:'▶',ScreenGui:'⊡',TextLabel:'T',ImageLabel:'🖼',TextButton:'⊡',ImageButton:'🔘'};
+  const colors = {Frame:'#7c6af7',ScrollingFrame:'#a78bfa',CanvasGroup:'#c4b5fd',ViewportFrame:'#60a5fa',VideoFrame:'#f59e0b',ScreenGui:'#22d3ee',TextLabel:'#4ade80',ImageLabel:'#34d399',TextButton:'#f472b6',ImageButton:'#fb7185'};
+  elements.forEach((el, i) => {
+    const d = document.createElement('div');
+    d.className = 'el-item' + (el.id === selected ? ' selected' : '');
+    const icon = document.createElement('div');
+    icon.className = 'ei-icon';
+    icon.style.background = (colors[el.type]||'#888') + '22';
+    icon.style.color = colors[el.type]||'#888';
+    icon.textContent = icons[el.type]||'▭';
+    const name = document.createElement('span');
+    name.className = 'ei-name';
+    name.textContent = el.name || el.type;
+    const type = document.createElement('span');
+    type.className = 'ei-type';
+    type.textContent = el.type;
+    d.appendChild(icon); d.appendChild(name); d.appendChild(type);
+    d.onclick = () => { selectEl(el.id); switchLTab(1); };
+    list.appendChild(d);
+    // sub-items for modifiers
+    const mods = el.modifiers || {};
+    Object.keys(mods).forEach(mk => {
+      const md = document.createElement('div');
+      md.className = 'el-item';
+      md.style.paddingLeft = '22px';
+      md.style.fontSize = '10px';
+      const mi = document.createElement('div');
+      mi.className = 'ei-icon';
+      mi.style.cssText = 'background:rgba(196,181,253,.15);color:#c4b5fd;font-size:9px';
+      mi.textContent = '✦';
+      const mn = document.createElement('span');
+      mn.className = 'ei-name';
+      mn.style.color = 'var(--accent3)';
+      mn.textContent = mk;
+      md.appendChild(mi); md.appendChild(mn);
+      md.onclick = e => { e.stopPropagation(); selectEl(el.id); renderProps(); };
+      list.appendChild(md);
+    });
+  });
+  syncHint();
+}
+
+// ─────────────────────────────────────────────
+// PROPERTIES PANEL
+// ─────────────────────────────────────────────
+function renderProps() {
+  const panel = document.getElementById('props-panel');
+  const el = elements.find(e => e.id === selected);
+  if (!el) { panel.innerHTML = '<div class="no-select">Chọn một element<br>để xem Properties</div>'; return; }
+
+  const id = el.id;
+  let html = '';
+
+  // ── Header
+  const colors = {Frame:'#7c6af7',ScrollingFrame:'#a78bfa',CanvasGroup:'#c4b5fd',ViewportFrame:'#60a5fa',VideoFrame:'#f59e0b',ScreenGui:'#22d3ee',TextLabel:'#4ade80',ImageLabel:'#34d399',TextButton:'#f472b6',ImageButton:'#fb7185'};
+  const c = colors[el.type]||'#888';
+  html += `<div style="padding:10px;background:var(--bg2);border-bottom:1px solid var(--border)">
+    <div style="font-size:12px;font-weight:700;color:${c}">${el.type}</div>
+    <input class="prop-input" style="margin-top:4px;font-family:'Syne',sans-serif" value="${el.name||''}" placeholder="Name..." oninput="propSet('${id}','name',this.value)"/>
+  </div>`;
+
+  // ── Transform
+  if (el.type !== 'ScreenGui') {
+    html += section('📐 Transform', `
+      ${row2('X','y','x',el)}
+      ${numRow(id,'X pos','x',0,2000,el.x)}
+      ${numRow(id,'Y pos','y',0,2000,el.y)}
+      ${numRow(id,'Width','w',10,2000,el.w)}
+      ${numRow(id,'Height','h',10,2000,el.h)}
+      ${numRow(id,'ZIndex','zIndex',0,20,el.zIndex||0)}
+      ${numRow(id,'Anchor X','anchorX',0,1,el.anchorX||0,0.01)}
+      ${numRow(id,'Anchor Y','anchorY',0,1,el.anchorY||0,0.01)}
+      ${numRow(id,'PosScale X','posScaleX',0,1,el.posScaleX||0,0.01)}
+      ${numRow(id,'PosScale Y','posScaleY',0,1,el.posScaleY||0,0.01)}
+      ${numRow(id,'SizeScale X','sizeScaleX',0,1,el.sizeScaleX||0,0.01)}
+      ${numRow(id,'SizeScale Y','sizeScaleY',0,1,el.sizeScaleY||0,0.01)}
+      ${chkRow(id,'Visible','visible',el.visible!==false)}
+    `);
+  }
+
+  // ── Appearance
+  html += section('🎨 Appearance', `
+    ${colRow(id,'BG Color','bgColor',el.bgColor)}
+    ${numRow(id,'Opacity','opacity',0,1,el.opacity||1,0.01)}
+    ${numRow(id,'Corner Radius','cornerRadius',0,100,el.cornerRadius||0)}
+    ${numRow(id,'Border Width','borderWidth',0,20,el.borderWidth||0)}
+    ${colRow(id,'Border Color','borderColor',el.borderColor)}
+  `);
+
+  // ── Type-specific
+  if (el.type === 'TextLabel' || el.type === 'TextButton') {
+    const fontOpts = ROBLOX_FONTS.map(f => `<option ${el.font===f?'selected':''} value="${f}">${f}</option>`).join('');
+    html += section('✏️ Text', `
+      ${txtRow(id,'Text','text',el.text||'')}
+      ${colRow(id,'Text Color','textColor',el.textColor)}
+      ${numRow(id,'TextSize','textSize',6,96,el.textSize||14)}
+      <div class="prop-row"><span class="prop-label">Font</span><select class="prop-input" onchange="propSet('${id}','font',this.value)">${fontOpts}</select></div>
+      <div class="prop-row"><span class="prop-label">X Align</span><div style="display:flex;gap:3px;flex:1">
+        ${['Left','Center','Right'].map(a=>`<div class="tog-opt ${el.textXAlignment===a?'on':''}" onclick="propSet('${id}','textXAlignment','${a}');renderProps()">${a}</div>`).join('')}
+      </div></div>
+      <div class="prop-row"><span class="prop-label">Y Align</span><div style="display:flex;gap:3px;flex:1">
+        ${['Top','Center','Bottom'].map(a=>`<div class="tog-opt ${el.textYAlignment===a?'on':''}" onclick="propSet('${id}','textYAlignment','${a}');renderProps()">${a}</div>`).join('')}
+      </div></div>
+      ${chkRow(id,'TextWrapped','textWrapped',el.textWrapped)}
+      ${chkRow(id,'TextScaled','textScaled',el.textScaled)}
+      ${chkRow(id,'RichText','richText',el.richText)}
+    `);
+  }
+
+  if (el.type === 'ImageLabel' || el.type === 'ImageButton') {
+    const scaleTypes = ['Stretch','Slice','Tile','Fit','Crop'];
+    html += section('🖼 Image', `
+      ${txtRow(id,'Image ID','image',el.image||'')}
+      ${colRow(id,'Image Color','imageColor',el.imageColor)}
+      ${numRow(id,'Img Transparency','imageTransparency',0,1,el.imageTransparency||0,0.01)}
+      <div class="prop-row"><span class="prop-label">ScaleType</span><select class="prop-input" onchange="propSet('${id}','scaleType',this.value)">
+        ${scaleTypes.map(s=>`<option ${el.scaleType===s?'selected':''} value="${s}">${s}</option>`).join('')}
+      </select></div>
+    `);
+  }
+
+  if (el.type === 'ScrollingFrame') {
+    html += section('⊟ ScrollingFrame', `
+      ${numRow(id,'ScrollBar W','scrollBarThickness',1,20,el.scrollBarThickness||6)}
+      ${colRow(id,'Bar Color','scrollBarColor',el.scrollBarColor)}
+      ${numRow(id,'Canvas SizeY','canvasSizeY',100,2000,el.canvasSizeY||200)}
+      ${chkRow(id,'ScrollEnabled','scrollEnabled',el.scrollEnabled!==false)}
+    `);
+  }
+
+  if (el.type === 'VideoFrame') {
+    html += section('▶ VideoFrame', `
+      ${txtRow(id,'Video ID','videoId',el.videoId||'')}
+      ${numRow(id,'Volume','volume',0,1,el.volume||0.5,0.01)}
+      ${chkRow(id,'Playing','playing',el.playing)}
+      ${chkRow(id,'Looped','looped',el.looped)}
+    `);
+  }
+
+  if (el.type === 'ScreenGui') {
+    html += section('⊡ ScreenGui', `
+      ${chkRow(id,'Enabled','enabled',el.enabled!==false)}
+      ${numRow(id,'DisplayOrder','displayOrder',0,100,el.displayOrder||0)}
+      ${chkRow(id,'ResetOnSpawn','resetOnSpawn',el.resetOnSpawn!==false)}
+      ${chkRow(id,'IgnoreGuiInset','ignoreGuiInset',el.ignoreGuiInset)}
+      ${chkRow(id,'ClipToDeviceSafe','clipToDeviceSafeArea',el.clipToDeviceSafeArea!==false)}
+    `);
+  }
+
+  if (el.type === 'TextButton' || el.type === 'ImageButton') {
+    html += section('🖱 Button', `
+      ${chkRow(id,'AutoButtonColor','autoButtonColor',el.autoButtonColor!==false)}
+      ${chkRow(id,'Modal','modal',el.modal)}
+    `);
+  }
+
+  if (el.type === 'CanvasGroup') {
+    html += section('⊞ CanvasGroup', `
+      ${numRow(id,'GroupTransparency','groupTransparency',0,1,el.groupTransparency||0,0.01)}
+    `);
+  }
+
+  // ── Modifiers
+  const mods = el.modifiers || {};
+  const hasAnyMod = Object.keys(mods).length > 0;
+
+  html += `<div class="panel-section"><div class="section-header">✨ Modifiers</div><div class="section-body modifier-section">`;
+  html += `<div class="modifier-label">Active</div><div class="modifier-tags">`;
+
+  const allMods = Object.keys(MODIFIER_DEFAULTS);
+  allMods.forEach(mk => {
+    const isActive = !!mods[mk];
+    html += `<div class="mod-tag ${isActive?'active-mod':''}" onclick="${isActive?`removeModifier('${mk}')`:`addModifierToSelected('${mk}')`}">${mk.replace('UI','')}</div>`;
+  });
+  html += `</div>`;
+
+  // Modifier sub-props
+  Object.keys(mods).forEach(mk => {
+    const md = mods[mk];
+    let mhtml = '';
+    if (mk === 'UICorner') mhtml += numRow(id,'CornerRadius','$UICorner.cornerRadius',0,100,md.cornerRadius||0);
+    if (mk === 'UIGradient') {
+      mhtml += `<div class="prop-row"><span class="prop-label">Color 0</span><input type="color" class="prop-input" value="${md.color0||'#7c6af7'}" oninput="modSet('${id}','UIGradient','color0',this.value)"/></div>`;
+      mhtml += `<div class="prop-row"><span class="prop-label">Color 1</span><input type="color" class="prop-input" value="${md.color1||'#22d3ee'}" oninput="modSet('${id}','UIGradient','color1',this.value)"/></div>`;
+      mhtml += numRow(id,'Rotation','$UIGradient.rotation',0,360,md.rotation||0);
+      mhtml += chkRow(id,'Enabled','$UIGradient.enabled',md.enabled!==false);
+    }
+    if (mk === 'UIStroke') {
+      mhtml += `<div class="prop-row"><span class="prop-label">Color</span><input type="color" class="prop-input" value="${md.color||'#7c6af7'}" oninput="modSet('${id}','UIStroke','color',this.value)"/></div>`;
+      mhtml += numRow(id,'Thickness','$UIStroke.thickness',1,20,md.thickness||2);
+      mhtml += numRow(id,'Transparency','$UIStroke.transparency',0,1,md.transparency||0,0.01);
+      mhtml += chkRow(id,'Enabled','$UIStroke.enabled',md.enabled!==false);
+    }
+    if (mk === 'UIPadding') {
+      mhtml += numRow(id,'Pad Top','$UIPadding.top',0,100,md.top||0);
+      mhtml += numRow(id,'Pad Bottom','$UIPadding.bottom',0,100,md.bottom||0);
+      mhtml += numRow(id,'Pad Left','$UIPadding.left',0,100,md.left||0);
+      mhtml += numRow(id,'Pad Right','$UIPadding.right',0,100,md.right||0);
+    }
+    if (mk === 'UIScale') mhtml += numRow(id,'Scale','$UIScale.scale',0.1,5,md.scale||1,0.01);
+    if (mk === 'UIAspectRatioConstraint') {
+      mhtml += numRow(id,'AspectRatio','$UIAspectRatioConstraint.aspectRatio',0.1,10,md.aspectRatio||1,0.01);
+      mhtml += `<div class="prop-row"><span class="prop-label">AspectType</span><select class="prop-input" onchange="modSet('${id}','UIAspectRatioConstraint','aspectType',this.value)">
+        ${['FitWithinMaxSize','ScaleWithParentSize'].map(v=>`<option ${md.aspectType===v?'selected':''} value="${v}">${v}</option>`).join('')}
+      </select></div>`;
+      mhtml += `<div class="prop-row"><span class="prop-label">DomAxis</span><div style="display:flex;gap:3px;flex:1">
+        ${['Width','Height'].map(a=>`<div class="tog-opt ${md.dominantAxis===a?'on':''}" onclick="modSet('${id}','UIAspectRatioConstraint','dominantAxis','${a}');renderProps()">${a}</div>`).join('')}
+      </div></div>`;
+    }
+    if (mk === 'UISizeConstraint') {
+      mhtml += numRow(id,'Min W','$UISizeConstraint.minSizeX',0,1000,md.minSizeX||0);
+      mhtml += numRow(id,'Min H','$UISizeConstraint.minSizeY',0,1000,md.minSizeY||0);
+      mhtml += numRow(id,'Max W','$UISizeConstraint.maxSizeX',0,2000,md.maxSizeX||999);
+      mhtml += numRow(id,'Max H','$UISizeConstraint.maxSizeY',0,2000,md.maxSizeY||999);
+    }
+    if (mk === 'UITextSizeConstraint') {
+      mhtml += numRow(id,'Min Size','$UITextSizeConstraint.minTextSize',1,100,md.minTextSize||6);
+      mhtml += numRow(id,'Max Size','$UITextSizeConstraint.maxTextSize',1,200,md.maxTextSize||100);
+    }
+    if (mk === 'UIListLayout') {
+      mhtml += `<div class="prop-row"><span class="prop-label">FillDir</span><div style="display:flex;gap:3px;flex:1">
+        ${['Horizontal','Vertical'].map(a=>`<div class="tog-opt ${md.fillDirection===a?'on':''}" onclick="modSet('${id}','UIListLayout','fillDirection','${a}');renderProps()">${a[0]}</div>`).join('')}
+      </div></div>`;
+      mhtml += numRow(id,'Padding','$UIListLayout.padding',0,50,md.padding||0);
+      mhtml += chkRow(id,'Wraps','$UIListLayout.wraps',md.wraps);
+    }
+    if (mk === 'UIGridLayout') {
+      mhtml += numRow(id,'Cell Size','$UIGridLayout.cellSize',10,300,md.cellSize||100);
+      mhtml += numRow(id,'Cell Pad X','$UIGridLayout.cellPaddingX',0,50,md.cellPaddingX||4);
+      mhtml += numRow(id,'Cell Pad Y','$UIGridLayout.cellPaddingY',0,50,md.cellPaddingY||4);
+    }
+    if (mk === 'UIFlexItem') {
+      mhtml += `<div class="prop-row"><span class="prop-label">FlexMode</span><select class="prop-input" onchange="modSet('${id}','UIFlexItem','flexMode',this.value)">
+        ${['Fill','Shrink','Grow','None'].map(v=>`<option ${md.flexMode===v?'selected':''} value="${v}">${v}</option>`).join('')}
+      </select></div>`;
+      mhtml += numRow(id,'GrowRatio','$UIFlexItem.growRatio',0,10,md.growRatio||1,0.1);
+      mhtml += numRow(id,'ShrinkRatio','$UIFlexItem.shrinkRatio',0,10,md.shrinkRatio||1,0.1);
+    }
+    if (mk === 'UIPageLayout') {
+      mhtml += chkRow(id,'Animated','$UIPageLayout.animated',md.animated!==false);
+      mhtml += `<div class="prop-row"><span class="prop-label">Direction</span><div style="display:flex;gap:3px;flex:1">
+        ${['Horizontal','Vertical'].map(a=>`<div class="tog-opt ${md.animationDirection===a?'on':''}" onclick="modSet('${id}','UIPageLayout','animationDirection','${a}');renderProps()">${a[0]}</div>`).join('')}
+      </div></div>`;
+      mhtml += chkRow(id,'Circular','$UIPageLayout.circular',md.circular);
+    }
+
+    if (mhtml) {
+      html += `<div style="margin-top:6px;border:1px solid rgba(124,106,247,.2);border-radius:6px;overflow:hidden">
+        <div style="padding:5px 8px;background:rgba(124,106,247,.1);font-size:9px;font-weight:700;color:var(--accent3);display:flex;justify-content:space-between;align-items:center">
+          <span>${mk}</span>
+          <span style="cursor:pointer;color:var(--red);font-size:11px" onclick="removeModifier('${mk}')">✕</span>
+        </div>
+        <div>${mhtml}</div>
+      </div>`;
+    }
+  });
+
+  html += `</div></div>`;
+
+  html += `<button class="del-btn" onclick="deleteSelected()">🗑 Delete ${el.type}</button>`;
+  panel.innerHTML = html;
+}
+
+function section(title, content) {
+  return `<div class="panel-section"><div class="section-header">${title}</div><div class="section-body">${content}</div></div>`;
+}
+
+function numRow(id, label, key, min, max, val, step=1) {
+  const isMod = key.startsWith('$');
+  const onChange = isMod
+    ? `modSetPath('${id}','${key.slice(1)}',+this.value)`
+    : `propSet('${id}','${key}',+this.value)`;
+  const lblId = 'lbl_' + key.replace(/\./g,'_') + '_' + id;
+  return `<div class="prop-row">
+    <span class="prop-label">${label}</span>
+    <input type="range" class="prop-input" min="${min}" max="${max}" step="${step}" value="${val}"
+      style="flex:1" oninput="${onChange};document.getElementById('${lblId}').textContent=parseFloat(this.value).toFixed(step<1?2:0)"/>
+    <span class="prop-val" id="${lblId}">${typeof val==='number'?val.toFixed(step<1?2:0):val}</span>
+  </div>`;
+}
+
+function colRow(id, label, key, val) {
+  const hexVal = val ? rgbToHex(val) : '#313244';
+  const isMod = key.startsWith('$');
+  const onChange = isMod
+    ? `modSetPath('${id}','${key.slice(1)}',hexToRgb(this.value))`
+    : `propSetRgb('${id}','${key}',this.value)`;
+  return `<div class="prop-row">
+    <span class="prop-label">${label}</span>
+    <input type="color" class="prop-input" value="${hexVal}" oninput="${onChange}"/>
+  </div>`;
+}
+
+function txtRow(id, label, key, val) {
+  return `<div class="prop-row">
+    <span class="prop-label">${label}</span>
+    <input type="text" class="prop-input" value="${(val||'').replace(/"/g,'&quot;')}"
+      oninput="propSet('${id}','${key}',this.value)"/>
+  </div>`;
+}
+
+function chkRow(id, label, key, val) {
+  const isMod = key.startsWith('$');
+  const onChange = isMod
+    ? `modSetPath('${id}','${key.slice(1)}',this.checked)`
+    : `propSet('${id}','${key}',this.checked)`;
+  return `<div class="prop-row">
+    <span class="prop-label">${label}</span>
+    <input type="checkbox" ${val?'checked':''} onchange="${onChange};renderEl(elements.find(e=>e.id==='${id}'));renderProps()"/>
+  </div>`;
+}
+
+function row2() { return ''; } // placeholder
+
+// ─────────────────────────────────────────────
+// PROP SETTERS
+// ─────────────────────────────────────────────
+function propSet(id, key, val) {
+  const el = elements.find(e => e.id === id);
+  if (!el) return;
+  el[key] = val;
+  renderEl(el);
+}
+
+function propSetRgb(id, key, hex) {
+  const el = elements.find(e => e.id === id);
+  if (!el) return;
+  el[key] = hexToRgb(hex);
+  el.bg = hex; // sync display
+  renderEl(el);
+}
+
+function modSet(id, modType, key, val) {
+  const el = elements.find(e => e.id === id);
+  if (!el || !el.modifiers || !el.modifiers[modType]) return;
+  el.modifiers[modType][key] = val;
+  renderEl(el);
+}
+
+function modSetPath(id, path, val) {
+  const el = elements.find(e => e.id === id);
+  if (!el) return;
+  const parts = path.split('.');
+  const modType = parts[0], key = parts[1];
+  if (!el.modifiers || !el.modifiers[modType]) return;
+  el.modifiers[modType][key] = val;
+  renderEl(el);
+}
+
+// ─────────────────────────────────────────────
+// COLOR UTILS
+// ─────────────────────────────────────────────
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+
+function rgbToHex(c) {
+  if (!c) return '#313244';
+  const r = Math.round(c.r||0), g = Math.round(c.g||0), b = Math.round(c.b||0);
+  return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// ─────────────────────────────────────────────
+// LEFT TAB SWITCH
+// ─────────────────────────────────────────────
+function switchLTab(i) {
+  [0,1].forEach(j => {
+    document.getElementById('ltab'+j).classList.toggle('active',j===i);
+    document.getElementById('ltabc'+j).classList.toggle('active',j===i);
+  });
+}
+
+// ─────────────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────────────
+function switchExportTab(t) {
+  exportTab = t;
+  document.getElementById('etab-lua').classList.toggle('active', t==='lua');
+  document.getElementById('etab-html').classList.toggle('active', t==='html');
+  document.getElementById('export-code').textContent = t === 'lua' ? buildLuaCode() : buildHTMLCode();
+}
+
+function buildLuaCode() {
+  let out = `-- Generated by Roblox UI Builder v2\n-- ${elements.length} element(s)\n\nlocal Players = game:GetService("Players")\nlocal player = Players.LocalPlayer\nlocal playerGui = player:WaitForChild("PlayerGui")\n\n`;
+
+  elements.forEach((el, i) => {
+    const vName = el.name.replace(/[^a-zA-Z0-9_]/g,'_') || el.type + i;
+    out += `-- ── ${el.type}: ${el.name} ──\n`;
+    out += `local ${vName} = Instance.new("${el.type}")\n`;
+
+    // Parent
+    if (el.type === 'ScreenGui') {
+      out += `${vName}.Parent = playerGui\n`;
+    } else if (i > 0) {
+      const parentEl = elements[0];
+      const parentName = (parentEl.name||parentEl.type+'0').replace(/[^a-zA-Z0-9_]/g,'_');
+      out += `${vName}.Parent = ${parentName}\n`;
+    } else {
+      out += `${vName}.Parent = playerGui\n`;
+    }
+
+    out += `${vName}.Name = "${el.name}"\n`;
+
+    if (el.type !== 'ScreenGui') {
+      out += `${vName}.Position = UDim2.new(${el.posScaleX||0}, ${Math.round(el.x)}, ${el.posScaleY||0}, ${Math.round(el.y)})\n`;
+      out += `${vName}.Size = UDim2.new(${el.sizeScaleX||0}, ${Math.round(el.w)}, ${el.sizeScaleY||0}, ${Math.round(el.h)})\n`;
+      out += `${vName}.AnchorPoint = Vector2.new(${el.anchorX||0}, ${el.anchorY||0})\n`;
+      out += `${vName}.ZIndex = ${el.zIndex||0}\n`;
+      if (el.bgColor) out += `${vName}.BackgroundColor3 = Color3.fromRGB(${Math.round(el.bgColor.r||0)}, ${Math.round(el.bgColor.g||0)}, ${Math.round(el.bgColor.b||0)})\n`;
+      const transparency = 1 - (typeof el.opacity === 'number' ? el.opacity : 1);
+      out += `${vName}.BackgroundTransparency = ${transparency.toFixed(2)}\n`;
+      if (el.visible === false) out += `${vName}.Visible = false\n`;
+    }
+
+    // Type specific
+    if ((el.type === 'TextLabel' || el.type === 'TextButton') && el.text) {
+      out += `${vName}.Text = "${(el.text||'').replace(/"/g,'\\"')}"\n`;
+      if (el.textColor) out += `${vName}.TextColor3 = Color3.fromRGB(${Math.round(el.textColor.r||0)}, ${Math.round(el.textColor.g||0)}, ${Math.round(el.textColor.b||0)})\n`;
+      out += `${vName}.TextSize = ${el.textSize||14}\n`;
+      out += `${vName}.Font = Enum.Font.${el.font||'GothamMedium'}\n`;
+      out += `${vName}.TextXAlignment = Enum.TextXAlignment.${el.textXAlignment||'Left'}\n`;
+      out += `${vName}.TextYAlignment = Enum.TextYAlignment.${el.textYAlignment||'Center'}\n`;
+      if (el.textWrapped) out += `${vName}.TextWrapped = true\n`;
+      if (el.textScaled) out += `${vName}.TextScaled = true\n`;
+      if (el.richText) out += `${vName}.RichText = true\n`;
+    }
+
+    if ((el.type === 'ImageLabel' || el.type === 'ImageButton') && el.image) {
+      out += `${vName}.Image = "${el.image}"\n`;
+      if (el.imageColor) out += `${vName}.ImageColor3 = Color3.fromRGB(${Math.round(el.imageColor.r||0)}, ${Math.round(el.imageColor.g||0)}, ${Math.round(el.imageColor.b||0)})\n`;
+      out += `${vName}.ImageTransparency = ${el.imageTransparency||0}\n`;
+      out += `${vName}.ScaleType = Enum.ScaleType.${el.scaleType||'Stretch'}\n`;
+    }
+
+    if (el.type === 'ScrollingFrame') {
+      out += `${vName}.ScrollBarThickness = ${el.scrollBarThickness||6}\n`;
+      if (el.scrollBarColor) out += `${vName}.ScrollBarImageColor3 = Color3.fromRGB(${Math.round(el.scrollBarColor.r||0)}, ${Math.round(el.scrollBarColor.g||0)}, ${Math.round(el.scrollBarColor.b||0)})\n`;
+      out += `${vName}.CanvasSize = UDim2.new(0, 0, 0, ${el.canvasSizeY||200})\n`;
+      if (el.scrollEnabled === false) out += `${vName}.ScrollingEnabled = false\n`;
+    }
+
+    if (el.type === 'VideoFrame') {
+      out += `${vName}.Video = "${el.videoId||'rbxassetid://0'}"\n`;
+      out += `${vName}.Volume = ${el.volume||0.5}\n`;
+      if (el.looped) out += `${vName}.Looped = true\n`;
+      if (el.playing) out += `${vName}:Play()\n`;
+    }
+
+    if (el.type === 'ScreenGui') {
+      if (el.enabled === false) out += `${vName}.Enabled = false\n`;
+      out += `${vName}.DisplayOrder = ${el.displayOrder||0}\n`;
+      if (el.resetOnSpawn === false) out += `${vName}.ResetOnSpawn = false\n`;
+      if (el.ignoreGuiInset) out += `${vName}.IgnoreGuiInset = true\n`;
+    }
+
+    if (el.type === 'CanvasGroup') {
+      out += `${vName}.GroupTransparency = ${el.groupTransparency||0}\n`;
+    }
+
+    if (el.type === 'TextButton' || el.type === 'ImageButton') {
+      if (el.autoButtonColor === false) out += `${vName}.AutoButtonColor = false\n`;
+      if (el.modal) out += `${vName}.Modal = true\n`;
+    }
+
+    // Modifiers
+    const mods = el.modifiers || {};
+    Object.keys(mods).forEach(mk => {
+      const md = mods[mk];
+      const mvName = mk + '_' + vName;
+      out += `\nlocal ${mvName} = Instance.new("${mk}")\n`;
+      out += `${mvName}.Parent = ${vName}\n`;
+
+      if (mk === 'UICorner') out += `${mvName}.CornerRadius = UDim.new(0, ${md.cornerRadius||0})\n`;
+      if (mk === 'UIGradient') {
+        const c0 = hexToRgb(md.color0||'#7c6af7'), c1 = hexToRgb(md.color1||'#22d3ee');
+        out += `${mvName}.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(${c0.r},${c0.g},${c0.b})), ColorSequenceKeypoint.new(1, Color3.fromRGB(${c1.r},${c1.g},${c1.b}))})\n`;
+        out += `${mvName}.Rotation = ${md.rotation||0}\n`;
+        if (md.enabled === false) out += `${mvName}.Enabled = false\n`;
+      }
+      if (mk === 'UIStroke') {
+        const sc = hexToRgb(md.color||'#7c6af7');
+        out += `${mvName}.Color = Color3.fromRGB(${sc.r},${sc.g},${sc.b})\n`;
+        out += `${mvName}.Thickness = ${md.thickness||2}\n`;
+        out += `${mvName}.Transparency = ${md.transparency||0}\n`;
+        out += `${mvName}.ApplyStrokeMode = Enum.ApplyStrokeMode.${md.applyStrokeMode||'Border'}\n`;
+        if (md.enabled === false) out += `${mvName}.Enabled = false\n`;
+      }
+      if (mk === 'UIPadding') {
+        out += `${mvName}.PaddingTop = UDim.new(0, ${md.top||0})\n`;
+        out += `${mvName}.PaddingBottom = UDim.new(0, ${md.bottom||0})\n`;
+        out += `${mvName}.PaddingLeft = UDim.new(0, ${md.left||0})\n`;
+        out += `${mvName}.PaddingRight = UDim.new(0, ${md.right||0})\n`;
+      }
+      if (mk === 'UIScale') out += `${mvName}.Scale = ${md.scale||1}\n`;
+      if (mk === 'UIAspectRatioConstraint') {
+        out += `${mvName}.AspectRatio = ${md.aspectRatio||1}\n`;
+        out += `${mvName}.AspectType = Enum.AspectType.${md.aspectType||'FitWithinMaxSize'}\n`;
+        out += `${mvName}.DominantAxis = Enum.DominantAxis.${md.dominantAxis||'Width'}\n`;
+      }
+      if (mk === 'UISizeConstraint') {
+        out += `${mvName}.MinSize = Vector2.new(${md.minSizeX||0}, ${md.minSizeY||0})\n`;
+        out += `${mvName}.MaxSize = Vector2.new(${md.maxSizeX||999}, ${md.maxSizeY||999})\n`;
+      }
+      if (mk === 'UITextSizeConstraint') {
+        out += `${mvName}.MinTextSize = ${md.minTextSize||6}\n`;
+        out += `${mvName}.MaxTextSize = ${md.maxTextSize||100}\n`;
+      }
+      if (mk === 'UIListLayout') {
+        out += `${mvName}.FillDirection = Enum.FillDirection.${md.fillDirection||'Vertical'}\n`;
+        out += `${mvName}.HorizontalAlignment = Enum.HorizontalAlignment.${md.horizontalAlignment||'Left'}\n`;
+        out += `${mvName}.VerticalAlignment = Enum.VerticalAlignment.${md.verticalAlignment||'Top'}\n`;
+        out += `${mvName}.SortOrder = Enum.SortOrder.${md.sortOrder||'LayoutOrder'}\n`;
+        out += `${mvName}.Padding = UDim.new(0, ${md.padding||0})\n`;
+        if (md.wraps) out += `${mvName}.Wraps = true\n`;
+      }
+      if (mk === 'UIGridLayout') {
+        out += `${mvName}.CellSize = UDim2.new(0, ${md.cellSize||100}, 0, ${md.cellSize||100})\n`;
+        out += `${mvName}.CellPaddingX = UDim.new(0, ${md.cellPaddingX||4})\n`;
+        out += `${mvName}.CellPadding = UDim2.new(0, ${md.cellPaddingX||4}, 0, ${md.cellPaddingY||4})\n`;
+        out += `${mvName}.FillDirection = Enum.FillDirection.${md.fillDirection||'Horizontal'}\n`;
+        out += `${mvName}.HorizontalAlignment = Enum.HorizontalAlignment.${md.horizontalAlignment||'Left'}\n`;
+        out += `${mvName}.SortOrder = Enum.SortOrder.${md.sortOrder||'LayoutOrder'}\n`;
+        out += `${mvName}.StartCorner = Enum.StartCorner.${md.startCorner||'TopLeft'}\n`;
+      }
+      if (mk === 'UITableLayout') {
+        out += `${mvName}.FillEmptySpaceColumns = ${md.fillEmptySpaceColumns?'true':'false'}\n`;
+        out += `${mvName}.FillEmptySpaceRows = ${md.fillEmptySpaceRows?'true':'false'}\n`;
+        out += `${mvName}.Padding = UDim2.new(0, ${md.padding||0}, 0, ${md.padding||0})\n`;
+      }
+      if (mk === 'UIPageLayout') {
+        out += `${mvName}.Animated = ${md.animated!==false?'true':'false'}\n`;
+        out += `${mvName}.AnimationDirection = Enum.AnimationDirection.${md.animationDirection||'Horizontal'}\n`;
+        out += `${mvName}.Circular = ${md.circular?'true':'false'}\n`;
+        out += `${mvName}.EasingStyle = Enum.EasingStyle.${md.easingStyle||'Quad'}\n`;
+        out += `${mvName}.EasingDirection = Enum.EasingDirection.${md.easingDirection||'Out'}\n`;
+        out += `${mvName}.Padding = UDim.new(0, ${md.padding||0})\n`;
+      }
+      if (mk === 'UIFlexItem') {
+        out += `${mvName}.FlexMode = Enum.UIFlexMode.${md.flexMode||'Fill'}\n`;
+        out += `${mvName}.GrowRatio = ${md.growRatio||1}\n`;
+        out += `${mvName}.ShrinkRatio = ${md.shrinkRatio||1}\n`;
+        out += `${mvName}.ItemLineAlignment = Enum.ItemLineAlignment.${md.itemLineAlignment||'Automatic'}\n`;
+      }
+    });
+
+    // Click handler for buttons
+    if (el.type === 'TextButton' || el.type === 'ImageButton') {
+      out += `\n${vName}.MouseButton1Click:Connect(function()\n\t-- TODO: add your logic here\nend)\n`;
+    }
+
+    out += '\n';
+  });
+
+  return out;
+}
+
+function buildHTMLCode() {
+  let out = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>Roblox UI Preview</title>\n<style>\nbody{margin:0;background:#0d0d14;font-family:Gotham,sans-serif}\n.ui-root{position:relative;width:800px;height:600px;overflow:hidden}\n</style>\n</head>\n<body>\n<div class="ui-root">\n`;
+  elements.forEach(el => {
+    if (el.type === 'ScreenGui') return;
+    const bg = el.bgColor ? `rgb(${Math.round(el.bgColor.r)},${Math.round(el.bgColor.g)},${Math.round(el.bgColor.b)})` : '#222';
+    const mods = el.modifiers || {};
+    let style = `position:absolute;left:${el.x}px;top:${el.y}px;width:${el.w}px;height:${el.h}px;`;
+    style += `opacity:${el.opacity||1};z-index:${el.zIndex||0};`;
+    if (mods.UICorner) style += `border-radius:${mods.UICorner.cornerRadius||0}px;`;
+    if (mods.UIGradient && mods.UIGradient.enabled!==false) style += `background:linear-gradient(${mods.UIGradient.rotation||0}deg,${mods.UIGradient.color0||'#7c6af7'},${mods.UIGradient.color1||'#22d3ee'});`;
+    else style += `background:${bg};`;
+    if (mods.UIStroke && mods.UIStroke.enabled!==false) style += `outline:${mods.UIStroke.thickness||2}px solid ${mods.UIStroke.color||'#7c6af7'};`;
+    if (mods.UIPadding) style += `padding:${mods.UIPadding.top||0}px ${mods.UIPadding.right||0}px ${mods.UIPadding.bottom||0}px ${mods.UIPadding.left||0}px;`;
+    if (el.type === 'TextLabel' || el.type === 'TextButton') {
+      const tc = el.textColor ? `rgb(${Math.round(el.textColor.r)},${Math.round(el.textColor.g)},${Math.round(el.textColor.b)})` : '#fff';
+      style += `display:flex;align-items:center;justify-content:${el.textXAlignment==='Center'?'center':el.textXAlignment==='Right'?'flex-end':'flex-start'};color:${tc};font-size:${el.textSize||14}px;font-weight:${el.type==='TextButton'?700:400};`;
+      if (el.type === 'TextButton') style += `cursor:pointer;`;
+      out += `  <div style="${style}">${el.text||''}</div>\n`;
+    } else {
+      out += `  <div style="${style}"></div>\n`;
+    }
+  });
+  out += `</div>\n</body>\n</html>`;
+  return out;
+}
+
+function showExport() {
+  const code = exportTab === 'lua' ? buildLuaCode() : buildHTMLCode();
+  document.getElementById('export-code').textContent = code;
+  document.getElementById('export-stats').textContent = `${elements.length} elements • ${code.split('\n').length} lines`;
+  document.getElementById('export-modal').classList.add('show');
+}
+function hideExport() { document.getElementById('export-modal').classList.remove('show'); }
+
+function copyCode() {
+  const code = exportTab === 'lua' ? buildLuaCode() : buildHTMLCode();
+  navigator.clipboard.writeText(code).then(() => showToast('✅ Copied!'));
+}
+
+function downloadCode() {
+  const code = exportTab === 'lua' ? buildLuaCode() : buildHTMLCode();
+  const ext = exportTab === 'lua' ? '.lua' : '.html';
+  const blob = new Blob([code], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'roblox-ui' + ext; a.click();
+}
+
+// ─────────────────────────────────────────────
+// KEYBOARD SHORTCUTS
+// ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
+  if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoAction(); }
+  if (e.ctrlKey && e.key === 'd') { e.preventDefault(); duplicateSelected(); }
+  if (e.key === 'Escape') { setTool('select'); selectEl(null); renderProps(); drawTool = null; }
+  if (e.key === 'ArrowUp' && selected) { const el = elements.find(e=>e.id===selected); if(el){saveHistory();el.y=Math.max(0,el.y-(e.shiftKey?10:1));renderEl(el);} }
+  if (e.key === 'ArrowDown' && selected) { const el = elements.find(e=>e.id===selected); if(el){saveHistory();el.y+=e.shiftKey?10:1;renderEl(el);} }
+  if (e.key === 'ArrowLeft' && selected) { const el = elements.find(e=>e.id===selected); if(el){saveHistory();el.x=Math.max(0,el.x-(e.shiftKey?10:1));renderEl(el);} }
+  if (e.key === 'ArrowRight' && selected) { const el = elements.find(e=>e.id===selected); if(el){saveHistory();el.x+=e.shiftKey?10:1;renderEl(el);} }
+});
+
+// Init
+renderProps();
+syncHint();
+</script>
+</body>
+</html>
